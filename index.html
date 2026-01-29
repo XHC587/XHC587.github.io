@@ -10,7 +10,7 @@
     <!-- 登录界面 -->
     <div id="login-screen" class="screen">
         <div class="login-container">
-            <h1>拼图游戏</h1>
+            <h1>拼图游戏登录</h1>
             <div class="input-group">
                 <label for="username">用户名:</label>
                 <input type="text" id="username" placeholder="请输入用户名">
@@ -21,9 +21,11 @@
             </div>
             <div class="input-group">
                 <label for="captcha">验证码:</label>
-                <input type="text" id="captcha" placeholder="请输入验证码">
-                <div id="captcha-display" class="captcha"></div>
-                <button id="refresh-captcha">刷新</button>
+                <input type="text" id="captcha" placeholder="请输入验证码" style="margin-bottom: 10px;">
+                <div style="display: flex; align-items: center;">
+                    <span id="captcha-display" class="captcha"></span>
+                    <button id="refresh-captcha">刷新</button>
+                </div>
             </div>
             <div class="button-group">
                 <button id="login-btn">登录</button>
@@ -35,7 +37,7 @@
     <!-- 注册界面 -->
     <div id="register-screen" class="screen hidden">
         <div class="register-container">
-            <h1>注册</h1>
+            <h1>拼图游戏注册</h1>
             <div class="input-group">
                 <label for="reg-username">用户名:</label>
                 <input type="text" id="reg-username" placeholder="请输入用户名">
@@ -46,7 +48,7 @@
             </div>
             <div class="input-group">
                 <label for="reg-confirm">确认密码:</label>
-                <input type="password" id="reg-confirm" placeholder="请确认密码">
+                <input type="password" id="reg-confirm" placeholder="请再次输入密码">
             </div>
             <div class="button-group">
                 <button id="reg-submit">注册</button>
@@ -55,61 +57,56 @@
         </div>
     </div>
 
-    <!-- 游戏主界面 -->
+    <!-- 游戏界面 -->
     <div id="game-screen" class="screen hidden">
         <div class="game-header">
             <h1>拼图游戏</h1>
             <div class="game-info">
-                <div id="step-count">步数: 0</div>
+                <span id="step-count">步数: 0</span>
             </div>
         </div>
-        
         <div class="game-menu">
-            <div class="menu-item" id="replay-btn">重新游戏</div>
-            <div class="menu-item" id="re-login-btn">重新登录</div>
-            <div class="menu-item" id="close-btn">关闭游戏</div>
-            <div class="menu-item dropdown">
-                更换图片
+            <div class="dropdown menu-item">更换图片
                 <div class="dropdown-content">
-                    <div class="img-option" data-img="1">图片1</div>
-                    <div class="img-option" data-img="2">图片2</div>
-                    <div class="img-option" data-img="3">图片3</div>
-                    <div class="img-option" data-img="4">图片4</div>
-                    <div class="img-option" data-img="5">图片5</div>
-                    <div class="img-option" data-img="6">图片6</div>
-                    <div class="img-option" data-img="7">图片7</div>
-                    <div class="img-option" data-img="8">图片8</div>
-                    <div class="img-option" data-img="9">图片9</div>
+                    <div class="img-option" data-img="1">TP1</div>
+                    <div class="img-option" data-img="2">TP2</div>
+                    <div class="img-option" data-img="3">TP3</div>
+                    <div class="img-option" data-img="4">TP4</div>
+                    <div class="img-option" data-img="5">TP5</div>
+                    <div class="img-option" data-img="6">TP6</div>
+                    <div class="img-option" data-img="7">TP7</div>
+                    <div class="img-option" data-img="8">TP8</div>
+                    <div class="img-option" data-img="9">TP9</div>
                 </div>
             </div>
-            <div class="menu-item" id="about-btn">关于我们</div>
+            <div class="menu-item" id="replay-btn">重新开始</div>
+            <div class="menu-item" id="re-login-btn">重新登录</div>
+            <div class="menu-item" id="close-btn">关闭游戏</div>
+            <div class="menu-item" id="about-btn">关于</div>
         </div>
-
-        <div id="game-board" class="game-board">
-            <!-- 拼图块将通过JavaScript动态生成 -->
-        </div>
+        <div id="game-board" class="game-board"></div>
     </div>
 
-    <!-- 游戏完成弹窗 -->
+    <!-- 胜利弹窗 -->
     <div id="victory-modal" class="modal hidden">
         <div class="modal-content">
+            <div id="victory-content"></div>
             <div id="victory-image"></div>
-            <div class="victory-message">恭喜你，成功完成拼图！</div>
-            <button id="caidan-btn" class="caidan-btn">我</button>
         </div>
     </div>
 
     <!-- 彩蛋弹窗 -->
     <div id="easter-egg-modal" class="modal hidden">
         <div class="modal-content">
-            <img id="easter-egg-image" src="" alt="彩蛋">
+            <div id="easter-egg-content"></div>
+            <div id="easter-egg-image"></div>
         </div>
     </div>
 
-    <!-- 关于我们弹窗 -->
+    <!-- 关于弹窗 -->
     <div id="about-modal" class="modal hidden">
         <div class="modal-content">
-            <img src="images/er/1.png" alt="公众号">
+            <img src="images/er/1.png" alt="关于我们" style="width: 100%; height: auto;">
         </div>
     </div>
 

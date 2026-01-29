@@ -66,13 +66,11 @@ function initializeEventListeners() {
     document.querySelectorAll('.img-option').forEach(option => {
         option.addEventListener('click', function() {
             const imgNum = this.dataset.img;
-            currentImagePath = `images/tupian-${imgNum === '1' ? '' : '-' + imgNum}/`;
+            // 修复图片路径问题：当选择图片1时使用tupian文件夹，其他图片使用tupian-2到tupian-9
+            currentImagePath = imgNum === '1' ? 'images/tupian/' : `images/tupian-${imgNum}/`;
             resetGame();
         });
     });
-
-    // 游戏完成事件
-    document.getElementById('caidan-btn').addEventListener('click', showEasterEgg);
 
     // 关闭弹窗事件
     document.querySelectorAll('.modal').forEach(modal => {
@@ -204,8 +202,8 @@ function renderGameBoard() {
             piece.className = 'puzzle-piece';
             
             if (gameData[i][j] !== 0) {
+                // 直接使用对应位置的拼图块图片，而不是通过背景定位
                 piece.style.backgroundImage = `url(${currentImagePath}chunk_${gameData[i][j]}.png)`;
-                piece.style.backgroundPosition = `${-j * 125}px ${-i * 166}px`;
                 piece.addEventListener('click', () => handlePieceClick(i, j));
             } else {
                 piece.style.backgroundColor = 'transparent';
@@ -245,10 +243,16 @@ function handlePieceClick(x, y) {
 function handleKeyDown(e) {
     if (currentScreen !== 'game') return;
 
-    // 空格键显示完整图片
-    if (e.code === 'Space') {
+    // 空格键显示完整图片 - 仅在未完成时有效
+    if (e.code === 'Space' && !victory) {
         e.preventDefault();
         showFullImage();
+    }
+    
+    // Ctrl+Shift+A 一键完成（替代原有的Alt键）
+    if (e.ctrlKey && e.shiftKey && e.code === 'KeyA') {
+        e.preventDefault();
+        completeGame();
     }
 }
 
@@ -263,51 +267,31 @@ function handleKeyUp(e) {
         return;
     }
 
-    // Alt键一键完成
-    if (e.altKey) {
-        completeGame();
-        return;
-    }
-
-    // 方向键移动
+    // 上下左右键移动拼图
     let newX = emptyX;
     let newY = emptyY;
 
     switch (e.code) {
         case 'ArrowUp':
-            newX++;
+            newX = emptyX + 1;
             break;
         case 'ArrowDown':
-            newX--;
+            newX = emptyX - 1;
             break;
         case 'ArrowLeft':
-            newY++;
+            newY = emptyY + 1;
             break;
         case 'ArrowRight':
-            newY--;
+            newY = emptyY - 1;
             break;
         default:
             return;
     }
 
-    // 检查移动是否有效
+    // 检查新位置是否在游戏板范围内
     if (newX >= 0 && newX < 4 && newY >= 0 && newY < 4) {
-        // 交换位置
-        [gameData[emptyX][emptyY], gameData[newX][newY]] = [gameData[newX][newY], gameData[emptyX][emptyY]];
-        
-        // 更新空白位置
-        emptyX = newX;
-        emptyY = newY;
-        
-        // 更新步数
-        stepCount++;
-        updateStepCount();
-        
-        // 重新渲染游戏板
-        renderGameBoard();
-        
-        // 检查是否胜利
-        checkVictory();
+        // 调用点击处理函数移动拼图
+        handlePieceClick(newX, newY);
     }
 }
 
@@ -318,11 +302,11 @@ function showFullImage() {
         fullImage = document.createElement('img');
         fullImage.id = 'full-image';
         fullImage.className = 'full-image';
-        fullImage.src = currentImagePath + '1-1.png';
         document.body.appendChild(fullImage);
-    } else {
-        fullImage.classList.remove('hidden');
     }
+    // 确保使用当前图片路径的1-1.png
+    fullImage.src = currentImagePath + '1-1.png';
+    fullImage.classList.remove('hidden');
 }
 
 // 隐藏完整图片
@@ -370,31 +354,79 @@ function checkVictory() {
 // 显示胜利弹窗
 function showVictoryModal() {
     const modal = document.getElementById('victory-modal');
+    const victoryContent = document.getElementById('victory-content');
     const victoryImage = document.getElementById('victory-image');
     
     // 清空内容
+    victoryContent.innerHTML = '';
     victoryImage.innerHTML = '';
     
     // 创建完整图片
     const img = document.createElement('img');
     img.src = currentImagePath + '1-1.png';
-    img.style.maxWidth = '500px';
+    img.style.maxWidth = '100%';
     img.style.maxHeight = '664px';
+    img.style.width = 'auto';
+    img.style.height = 'auto';
     
     victoryImage.appendChild(img);
+    
+    // 添加原始的步数统计文字（放在图片上方）
+    const originalMessage = document.createElement('div');
+    originalMessage.className = 'victory-message';
+    originalMessage.innerHTML = '恭喜你成功完成拼图！你总共用了' + stepCount + '步完成拼图。';
+    
+    victoryContent.appendChild(originalMessage);
+    
+    // 添加彩蛋相关文字（放在图片下方）
+    const eggMessage = document.createElement('div');
+    eggMessage.className = 'victory-message';
+    
+    // 创建"恭喜你 成功完成 点 我 有彩蛋"文字，其中"我"是隐藏按钮
+    eggMessage.innerHTML = '恭喜你 成功完成 点 ' + 
+                        '<button class="hidden-button" onclick="showEasterEgg()">我</button>' + 
+                        ' 有彩蛋';
+    
+    victoryContent.appendChild(eggMessage);
     modal.classList.remove('hidden');
 }
 
 // 显示彩蛋
 function showEasterEgg() {
     const modal = document.getElementById('easter-egg-modal');
+    const eggContent = document.getElementById('easter-egg-content');
     const eggImage = document.getElementById('easter-egg-image');
+    
+    // 清空内容
+    eggContent.innerHTML = '';
+    eggImage.innerHTML = '';
     
     // 确定彩蛋图片路径
     const pathParts = currentImagePath.split('-');
     const imgNum = pathParts.length > 1 ? pathParts[1].split('/')[0] : '1';
+    const eggPath = `images/TTPZ/${imgNum}.png`;
     
-    eggImage.src = `images/TTPZ/${imgNum}.png`;
+    // 创建图片元素
+    const img = document.createElement('img');
+    img.src = eggPath;
+    img.style.maxWidth = '100%';
+    img.style.maxHeight = '80vh';
+    img.style.width = 'auto';
+    img.style.height = 'auto';
+    img.style.display = 'block';
+    img.style.margin = '0 auto';
+    
+    // 检查图片是否加载成功
+    img.onerror = function() {
+        const errorMsg = document.createElement('p');
+        errorMsg.textContent = '彩蛋图片尚未添加，敬请期待！';
+        errorMsg.style.color = 'red';
+        errorMsg.style.textAlign = 'center';
+        errorMsg.style.fontSize = '18px';
+        eggContent.appendChild(errorMsg);
+    };
+    
+    eggImage.appendChild(img);
     modal.classList.remove('hidden');
     
     // 隐藏胜利弹窗

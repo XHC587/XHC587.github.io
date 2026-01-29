@@ -204,7 +204,8 @@ body {
 .puzzle-piece {
     width: 125px;
     height: 166px;
-    background-size: 500px 664px;
+    background-size: cover; /* 修改为 cover 以确保图片完整显示 */
+    background-repeat: no-repeat;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
@@ -242,23 +243,30 @@ body {
     font-weight: bold;
 }
 
-.caidan-btn {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    font-size: 20px;
-    color: red;
-    background-color: transparent;
+/* 隐藏按钮样式 - 使按钮看起来像普通文字 */
+.hidden-button {
+    background: none;
     border: none;
-    cursor: pointer;
+    color: red;
+    font-size: 24px;
     font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+    margin: 0 5px;
+    display: inline;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
 }
 
-/* 完整图片显示 */
+.hidden-button:hover {
+    opacity: 0.7;
+}
+
+/* 完整图片显示 - 修改为左移不遮挡拼图 */
 .full-image {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 35%; /* 修改为左移 */
     transform: translate(-50%, -50%);
     z-index: 1001;
 }
